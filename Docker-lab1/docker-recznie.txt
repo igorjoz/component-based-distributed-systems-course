@@ -1,0 +1,331 @@
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker network create library-network
+07490240d3a9dc9f3fc78aba1bd76a24bd48964a3533ea4a729de66119da1ab9
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker run -d --name rabbitmq --hostname rabbit --network library-network -p 15672:15672 -p 5672:5672 -e RABBITMQ_DEFAULT_USER=guest -e RABBITMQ_DEFAULT_PASS=guest --health-cmd="rabbitmqctl status" --health-interval=10s --health-timeout=5s --health-retries=5 --restart unless-stopped rabbitmq:3-management
+e17d9e8d7350e8c5ef40005af76070219483d1ea032a90cd4ba58e3bcfef8ba6
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker ps --filter name=rabbitmq --format "table {{.Names}}\t{{.Status}}"
+NAMES      STATUS
+rabbitmq   Up 10 seconds (health: starting)
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker build -t library-webapi -f Library.WebApi/Dockerfile . 
+[+] Building 33.5s (17/17) FINISHED                                       docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                      0.0s
+ => => transferring dockerfile: 632B                                                      0.0s
+ => [internal] load metadata for mcr.microsoft.com/dotnet/aspnet:8.0                      0.4s
+ => [internal] load metadata for mcr.microsoft.com/dotnet/sdk:8.0                         0.4s
+ => [internal] load .dockerignore                                                         0.0s
+ => => transferring context: 202B                                                         0.0s
+ => [build 1/8] FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b92  10.9s
+ => => resolve mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b927df7659  0.0s
+ => => sha256:bc37b2ebd5bbe2f504af05df2d0d18e13e9b51d0c1aef0fb59af5220 16.97MB / 16.97MB  1.5s
+ => => sha256:12377d033b0c6a8d373b05c69bef43fb41dfa1960f38b9eff053d29a97 2.64kB / 2.64kB  0.2s
+ => => sha256:1cd4496a93825155d2449ec2e050415059fee04ad6d4007407235d 177.34MB / 177.34MB  5.9s
+ => => sha256:814c5aee03a985230d90408b2c9ea39bbbbd4f388dcfa02be8b90319 30.88MB / 30.88MB  2.2s
+ => => extracting sha256:814c5aee03a985230d90408b2c9ea39bbbbd4f388dcfa02be8b90319aac03de  0.6s
+ => => extracting sha256:1cd4496a93825155d2449ec2e050415059fee04ad6d4007407235ddd1f2ae08  2.3s
+ => => extracting sha256:12377d033b0c6a8d373b05c69bef43fb41dfa1960f38b9eff053d29a97e3d8c  0.0s
+ => => extracting sha256:bc37b2ebd5bbe2f504af05df2d0d18e13e9b51d0c1aef0fb59af52205118d7f  0.3s
+ => [stage-1 1/3] FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d  4.5s
+ => => resolve mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d54090562  0.0s 
+ => => sha256:ef919660cf490da619ebe58eedf2ddcebea1e57760bacc8680a30ea2 11.08MB / 11.08MB  1.5s 
+ => => sha256:b69e1e22fe06582962396d27f5077f553ace1aebe658c4fa83b682901aedb0 154B / 154B  0.3s 
+ => => sha256:4e39187bfda965437f7c6675318b02d0b556036224a5fb1780918e20 32.25MB / 32.25MB  2.8s 
+ => => sha256:f8a78fa15fface67144edf7c21ce9e22d24247b381277685ab705bbfb7 3.28kB / 3.28kB  0.3s 
+ => => sha256:c7b77b706c55870bc2343909194d9ba7ccafd818d5fa5c1f53ce41ae 18.73MB / 18.73MB  1.7s 
+ => => sha256:dad67da3f26bce15939543965e09c4059533b025f707aad72ed3d3f3 28.23MB / 28.23MB  2.3s 
+ => => extracting sha256:dad67da3f26bce15939543965e09c4059533b025f707aad72ed3d3f3a09c66f  0.7s 
+ => => extracting sha256:c7b77b706c55870bc2343909194d9ba7ccafd818d5fa5c1f53ce41ae1b652c5  0.3s 
+ => => extracting sha256:f8a78fa15fface67144edf7c21ce9e22d24247b381277685ab705bbfb76304d  0.0s 
+ => => extracting sha256:4e39187bfda965437f7c6675318b02d0b556036224a5fb1780918e2036a2e6a  0.4s 
+ => => extracting sha256:b69e1e22fe06582962396d27f5077f553ace1aebe658c4fa83b682901aedb0b  0.0s 
+ => => extracting sha256:ef919660cf490da619ebe58eedf2ddcebea1e57760bacc8680a30ea2515f723  0.2s 
+ => [internal] load build context                                                         0.0s 
+ => => transferring context: 11.52kB                                                      0.0s 
+ => [stage-1 2/3] WORKDIR /app                                                            0.5s 
+ => [build 2/8] WORKDIR /src                                                              0.8s 
+ => [build 3/8] COPY Library.sln ./                                                       0.0s 
+ => [build 4/8] COPY Library.WebApi/Library.WebApi.csproj Library.WebApi/                 0.0s 
+ => [build 5/8] RUN dotnet restore Library.WebApi/Library.WebApi.csproj                  17.3s 
+ => [build 6/8] COPY Library.WebApi/ Library.WebApi/                                      0.1s 
+ => [build 7/8] WORKDIR /src/Library.WebApi                                               0.0s 
+ => [build 8/8] RUN dotnet publish -c Release -o /app/publish                             3.3s 
+ => [stage-1 3/3] COPY --from=build /app/publish .                                        0.1s 
+ => exporting to image                                                                    0.3s 
+ => => exporting layers                                                                   0.2s 
+ => => exporting manifest sha256:517b8a42a9ac5269519ae4c5871ff5b5b393e8b6b7696a7839f6365  0.0s 
+ => => exporting config sha256:892de883c438df10ad60d72920dc48a2e95091f14a2abc1818fcef1de  0.0s 
+ => => exporting attestation manifest sha256:92552f30d087f2801e2beb34b478c8cbf7fb88115b3  0.0s 
+ => => exporting manifest list sha256:4526d8a6b8009d485dfa60d55d3ecc14dfd9dee9a9c1203a8d  0.0s 
+ => => naming to docker.io/library/library-webapi:latest                                  0.0s 
+ => => unpacking to docker.io/library/library-webapi:latest                               0.1s 
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/olt3mryhorwy14dcqbrg5q0ts
+
+What's next:
+    View a summary of image vulnerabilities and recommendations → docker scout quickview 
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker run -d --name library-webapi --network library-network -p 91:91 -e ASPNETCORE_ENVIRONMENT=Development -e RabbitMQ__Username=guest -e RabbitMQ__Password=guest -e "RabbitMQ__ServerAddress=rabbitmq://rabbitmq" --restart unless-stopped library-webapi
+37375d5b4655185e61a48ab9f1b175422fc4d6cac7a4b24a7a6e51dfb5b2ce4f
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker build -t library-notificationservice -f Library.NotificationService2/Dockerfile .
+[+] Building 22.1s (19/19) FINISHED                                       docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                      0.0s
+ => => transferring dockerfile: 855B                                                      0.0s 
+ => [internal] load metadata for mcr.microsoft.com/dotnet/aspnet:8.0                      0.1s 
+ => [internal] load metadata for mcr.microsoft.com/dotnet/sdk:8.0                         0.1s 
+ => [internal] load .dockerignore                                                         0.0s
+ => => transferring context: 202B                                                         0.0s 
+ => [build  1/10] FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b9  0.0s 
+ => => resolve mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b927df7659  0.0s 
+ => [internal] load build context                                                         0.0s 
+ => => transferring context: 8.49kB                                                       0.0s 
+ => [stage-1 1/3] FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d  0.0s 
+ => => resolve mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d54090562  0.0s 
+ => CACHED [build  2/10] WORKDIR /src                                                     0.0s 
+ => CACHED [build  3/10] COPY Library.sln ./                                              0.0s 
+ => [build  4/10] COPY Library.NotificationService2/Library.NotificationService2.csproj   0.0s 
+ => [build  5/10] COPY Library.WebApi/Library.WebApi.csproj Library.WebApi/               0.0s
+ => [build  6/10] RUN dotnet restore Library.NotificationService2/Library.NotificationS  17.9s
+ => [build  7/10] COPY Library.NotificationService2/ Library.NotificationService2/        0.1s 
+ => [build  8/10] COPY Library.WebApi/ Library.WebApi/                                    0.0s 
+ => [build  9/10] WORKDIR /src/Library.NotificationService2                               0.0s 
+ => [build 10/10] RUN dotnet publish -c Release -o /app/publish                           3.3s 
+ => CACHED [stage-1 2/3] WORKDIR /app                                                     0.0s 
+ => [stage-1 3/3] COPY --from=build /app/publish .                                        0.0s 
+ => exporting to image                                                                    0.3s 
+ => => exporting layers                                                                   0.2s 
+ => => exporting manifest sha256:9c1cbea48fa0da603eec82a43030458e8909979ab5428c416a1d2f5  0.0s 
+ => => exporting config sha256:78222262ba9a068e30aff60a87d52c5f7c3449a2c03efc03cc0303b3c  0.0s 
+ => => exporting attestation manifest sha256:7d69600cb768756ac80a6b6ad08a8ac284ac7460f01  0.0s 
+ => => exporting manifest list sha256:db62fb6b3ba34f5e698086b41380921fb8fc10412f29c55a07  0.0s 
+ => => naming to docker.io/library/library-notificationservice:latest                     0.0s 
+ => => unpacking to docker.io/library/library-notificationservice:latest                  0.0s 
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/70xvczv7ke5z77sk5ok0hhl6c
+
+What's next:
+    View a summary of image vulnerabilities and recommendations → docker scout quickview 
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker run -d --name library-notificationservice --network library-network -e ASPNETCORE_ENVIRONMENT=Development -e RabbitMQ__Username=guest -e RabbitMQ__Password=guest -e "RabbitMQ__ServerAddress=rabbitmq://rabbitmq" --restart unless-stopped library-notificationservice
+17b10b608a603641cdb744c2b61212791c66bdbb8b421ff676ee2c4440f3df23
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker build -t library-notificationservice -f Library.NotificationService2/Dockerfile .
+[+] Building 0.4s (19/19) FINISHED                                        docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                      0.0s
+ => => transferring dockerfile: 855B                                                      0.0s 
+ => [internal] load metadata for mcr.microsoft.com/dotnet/aspnet:8.0                      0.1s 
+ => [internal] load metadata for mcr.microsoft.com/dotnet/sdk:8.0                         0.1s 
+ => [internal] load .dockerignore                                                         0.0s
+ => => transferring context: 202B                                                         0.0s 
+ => [build  1/10] FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b9  0.0s 
+ => => resolve mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b927df7659  0.0s 
+ => [stage-1 1/3] FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d  0.0s 
+ => => resolve mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d54090562  0.0s 
+ => [internal] load build context                                                         0.0s 
+ => => transferring context: 1.69kB                                                       0.0s 
+ => CACHED [stage-1 2/3] WORKDIR /app                                                     0.0s 
+ => CACHED [build  2/10] WORKDIR /src                                                     0.0s 
+ => CACHED [build  3/10] COPY Library.sln ./                                              0.0s 
+ => CACHED [build  4/10] COPY Library.NotificationService2/Library.NotificationService2.  0.0s 
+ => CACHED [build  5/10] COPY Library.WebApi/Library.WebApi.csproj Library.WebApi/        0.0s
+ => CACHED [build  6/10] RUN dotnet restore Library.NotificationService2/Library.Notific  0.0s 
+ => CACHED [build  7/10] COPY Library.NotificationService2/ Library.NotificationService2  0.0s 
+ => CACHED [build  8/10] COPY Library.WebApi/ Library.WebApi/                             0.0s 
+ => CACHED [build  9/10] WORKDIR /src/Library.NotificationService2                        0.0s 
+ => CACHED [build 10/10] RUN dotnet publish -c Release -o /app/publish                    0.0s 
+ => CACHED [stage-1 3/3] COPY --from=build /app/publish .                                 0.0s 
+ => exporting to image                                                                    0.1s 
+ => => exporting layers                                                                   0.0s 
+ => => exporting manifest sha256:9c1cbea48fa0da603eec82a43030458e8909979ab5428c416a1d2f5  0.0s 
+ => => exporting config sha256:78222262ba9a068e30aff60a87d52c5f7c3449a2c03efc03cc0303b3c  0.0s 
+ => => exporting attestation manifest sha256:9a01e808e282e7070d018275fda888e52d9679b648e  0.0s 
+ => => exporting manifest list sha256:08089245cc8a4fa9aa42bae49c101168c5869e7b41df455701  0.0s 
+ => => naming to docker.io/library/library-notificationservice:latest                     0.0s 
+ => => unpacking to docker.io/library/library-notificationservice:latest                  0.0s 
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/vkylficoru299kkixyfxkhdx2
+
+What's next:
+    View a summary of image vulnerabilities and recommendations → docker scout quickview       
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker run -d --name library-notificationservice --network library-network -e ASPNETCORE_ENVIRONMENT=Development -e RabbitMQ__Username=guest -e RabbitMQ__Password=guest -e "RabbitMQ__ServerAddress=rabbitmq://rabbitmq" --restart unless-stopped library-notificationservice
+docker: Error response from daemon: Conflict. The container name "/library-notificationservice" is already in use by container "17b10b608a603641cdb744c2b61212791c66bdbb8b421ff676ee2c4440f3df23". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker rm -f library-notificationservice
+library-notificationservice
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker run -d --name library-notificationservice --network library-network -e ASPNETCORE_ENVIRONMENT=Development -e RabbitMQ__Username=guest -e RabbitMQ__Password=guest -e "RabbitMQ__ServerAddress=rabbitmq://rabbitmq" --restart unless-stopped library-notificationservice
+330888f94b3f6a9063538f9b31b3effc77733b1bdae44b2287b996cb4c95a0aa
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker ps
+CONTAINER ID   IMAGE                         COMMAND                  CREATED              STATUS                   PORTS                                                                     
+                                    NAMES
+330888f94b3f   library-notificationservice   "dotnet Library.Noti…"   About a minute ago   Up About a minute        80/tcp                                                                    
+                                    library-notificationservice
+37375d5b4655   library-webapi                "dotnet Library.WebA…"   3 minutes ago        Up 3 minutes             0.0.0.0:91->91/tcp                                                        
+                                    library-webapi
+e17d9e8d7350   rabbitmq:3-management         "docker-entrypoint.s…"   4 minutes ago        Up 4 minutes (healthy)   4369/tcp, 5671/tcp, 0.0.0.0:5672->5672/tcp, 15671/tcp, 15691-15692/tcp, 25672/tcp, 0.0.0.0:15672->15672/tcp   rabbitmq
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker ps --filter name=library-web
+CONTAINER ID   IMAGE            COMMAND                  CREATED         STATUS         PORTS                NAMES
+37375d5b4655   library-webapi   "dotnet Library.WebA…"   3 minutes ago   Up 3 minutes   0.0.0.0:91->91/tcp   library-webapi
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker logs library-web
+Error response from daemon: No such container: library-web
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker logs library-webapi
+warn: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[60]
+      Storing keys in a directory '/root/.aspnet/DataProtection-Keys' that may not be persisted outside of the container. Protected data will be unavailable when container is destroyed. For more information go to https://aka.ms/aspnet/dataprotectionwarning
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[62]
+      User profile is available. Using '/root/.aspnet/DataProtection-Keys' as key repository; keys will not be encrypted at rest.
+info: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[58]
+      Creating key {a6f03a0e-6fb8-43c3-ab9e-49b19d607a59} with creation date 2025-06-12 22:47:27Z, activation date 2025-06-12 22:47:27Z, and expiration date 2025-09-10 22:47:27Z.
+warn: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[35]
+      No XML encryptor configured. Key {a6f03a0e-6fb8-43c3-ab9e-49b19d607a59} may be persisted to storage in unencrypted form.
+info: Microsoft.AspNetCore.DataProtection.Repositories.FileSystemXmlRepository[39]
+      Writing data to file '/root/.aspnet/DataProtection-Keys/key-a6f03a0e-6fb8-43c3-ab9e-49b19d607a59.xml'.
+Hosting environment: Development
+Content root path: /app
+Now listening on: http://0.0.0.0:91
+Application started. Press Ctrl+C to shut down.
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/api/library/rent/999 - - -
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+      Failed to determine the https port for redirect.
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+      Route matched with {action = "Rent", controller = "Library"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Rent(Int32) on controller Library.WebApi.Controllers.LibraryController (Library.WebApi).
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor[1]
+      Executing NotFoundObjectResult, writing value of type 'System.String'.
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+      Executed action Library.WebApi.Controllers.LibraryController.Rent (Library.WebApi) in 16.038ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/api/library/rent/999 - 404 - text/plain;+charset=utf-8 71.1899ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/api/library/rent/1 - - -
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+      Route matched with {action = "Rent", controller = "Library"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Rent(Int32) on controller Library.WebApi.Controllers.LibraryController (Library.WebApi).
+info: Microsoft.AspNetCore.Mvc.StatusCodeResult[1]
+      Executing StatusCodeResult, setting HTTP status code 200
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+      Executed action Library.WebApi.Controllers.LibraryController.Rent (Library.WebApi) in 136.5016ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/api/library/rent/1 - 200 0 - 137.5464ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/api/library/rent/1 - - -
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+      Route matched with {action = "Rent", controller = "Library"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Rent(Int32) on controller Library.WebApi.Controllers.LibraryController (Library.WebApi).
+info: Microsoft.AspNetCore.Mvc.StatusCodeResult[1]
+      Executing StatusCodeResult, setting HTTP status code 200
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+      Executed action Library.WebApi.Controllers.LibraryController.Rent (Library.WebApi) in 5.9876ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/api/library/rent/1 - 200 0 - 6.5052ms  
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/api/library/rented - - -
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+      Route matched with {action = "GetRented", controller = "Library"}. Executing controller action with signature System.Collections.Generic.IEnumerable`1[Library.WebApi.Models.LibraryResource] GetRented() on controller Library.WebApi.Controllers.LibraryController (Library.WebApi). 
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor[1]
+      Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[Library.WebApi.Models.LibraryResource, Library.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+      Executed action Library.WebApi.Controllers.LibraryController.GetRented (Library.WebApi) in 16.9655ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/api/library/rented - 200 - application/json;+charset=utf-8 18.6781ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/api/library/rented - - -
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+      Route matched with {action = "GetRented", controller = "Library"}. Executing controller action with signature System.Collections.Generic.IEnumerable`1[Library.WebApi.Models.LibraryResource] GetRented() on controller Library.WebApi.Controllers.LibraryController (Library.WebApi). 
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor[1]
+      Executing ObjectResult, writing value of type 'System.Collections.Generic.List`1[[Library.WebApi.Models.LibraryResource, Library.WebApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]'.
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+      Executed action Library.WebApi.Controllers.LibraryController.GetRented (Library.WebApi) in 1.2756ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/api/library/rented - 200 - application/json;+charset=utf-8 2.8575ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/api/library/rent/1 - - -
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+      Route matched with {action = "Rent", controller = "Library"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Rent(Int32) on controller Library.WebApi.Controllers.LibraryController (Library.WebApi).
+info: Microsoft.AspNetCore.Mvc.StatusCodeResult[1]
+      Executing StatusCodeResult, setting HTTP status code 200
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+      Executed action Library.WebApi.Controllers.LibraryController.Rent (Library.WebApi) in 9.4258ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/api/library/rent/1 - 200 0 - 9.8777ms  
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/api/library/rent/999 - - -
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[102]
+      Route matched with {action = "Rent", controller = "Library"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.ActionResult] Rent(Int32) on controller Library.WebApi.Controllers.LibraryController (Library.WebApi).
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ObjectResultExecutor[1]
+      Executing NotFoundObjectResult, writing value of type 'System.String'.
+info: Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker[105]
+      Executed action Library.WebApi.Controllers.LibraryController.Rent (Library.WebApi) in 0.3884ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/api/library/rent/999 - 404 - text/plain;+charset=utf-8 0.7558ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/ - 404 0 - 0.5644ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+      Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:91/, Response status code: 404
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/ - 404 0 - 0.5263ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+      Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:91/, Response status code: 404
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/ - 404 0 - 0.4617ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+      Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:91/, Response status code: 404
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/ - 404 0 - 0.4328ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+      Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:91/, Response status code: 404
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/ - 404 0 - 0.1379ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+      Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:91/, Response status code: 404
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/ - 404 0 - 0.1472ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+      Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:91/, Response status code: 404
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://localhost:91/ - - -
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://localhost:91/ - 404 0 - 0.2916ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[16]
+      Request reached the end of the middleware pipeline without being handled by application code. Request path: GET http://localhost:91/, Response status code: 404
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker build -t library-web -f Library.Web/Dockerfile .
+[+] Building 6.1s (17/17) FINISHED                                        docker:desktop-linux
+ => [internal] load build definition from Dockerfile                                      0.0s
+ => => transferring dockerfile: 605B                                                      0.0s 
+ => [internal] load metadata for mcr.microsoft.com/dotnet/aspnet:8.0                      0.1s 
+ => [internal] load metadata for mcr.microsoft.com/dotnet/sdk:8.0                         0.1s 
+ => [internal] load .dockerignore                                                         0.0s
+ => => transferring context: 202B                                                         0.0s 
+ => [build 1/8] FROM mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b927  0.0s 
+ => => resolve mcr.microsoft.com/dotnet/sdk:8.0@sha256:e6a5a8d884609907fa8d468b927df7659  0.0s 
+ => [internal] load build context                                                         0.4s 
+ => => transferring context: 2.39MB                                                       0.3s 
+ => [stage-1 1/3] FROM mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d  0.0s 
+ => => resolve mcr.microsoft.com/dotnet/aspnet:8.0@sha256:d5c0d91bc8fe887684b97d54090562  0.0s 
+ => CACHED [build 2/8] WORKDIR /src                                                       0.0s
+ => CACHED [build 3/8] COPY Library.sln ./                                                0.0s 
+ => [build 4/8] COPY Library.Web/Library.Web.csproj Library.Web/                          0.0s 
+ => [build 5/8] RUN dotnet restore Library.Web/Library.Web.csproj                         1.0s 
+ => [build 6/8] COPY Library.Web/ Library.Web/                                            0.0s
+ => [build 7/8] WORKDIR /src/Library.Web                                                  0.0s 
+ => [build 8/8] RUN dotnet publish -c Release -o /app/publish                             4.0s 
+ => CACHED [stage-1 2/3] WORKDIR /app                                                     0.0s 
+ => [stage-1 3/3] COPY --from=build /app/publish .                                        0.0s 
+ => exporting to image                                                                    0.2s 
+ => => exporting layers                                                                   0.1s 
+ => => exporting manifest sha256:73ce99a78ee2ecd8bbb43408faf2bfc23c855af529b95add24f563e  0.0s 
+ => => exporting config sha256:8784b07c1b5a33b7b7e7df25fd02ca3f38def8c520880a7b8450af7ae  0.0s 
+ => => exporting attestation manifest sha256:273f24ad7485d954a149a3b474033eec3da6f7fbb76  0.0s 
+ => => exporting manifest list sha256:825b53762b84672dfa9549d9a9980052469f45dac914012a0e  0.0s 
+ => => naming to docker.io/library/library-web:latest                                     0.0s 
+ => => unpacking to docker.io/library/library-web:latest                                  0.0s 
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/nxlky9sye7eroahorp3mcf88d
+
+What's next:
+    View a summary of image vulnerabilities and recommendations → docker scout quickview 
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> docker run -d --name library-web --network library-network -p 90:80 -e ASPNETCORE_ENVIRONMENT=Development -e LibraryWebApiServiceHost=http://library-webapi:91 --restart unless-stopped library-web
+44107946afab7f0ac249703fe858c6b2092b929382995a6694f53425e8c201b2
+PS C:\Users\jozef\Downloads\DockerLab1\LibrarySystem> 

@@ -1,0 +1,71 @@
+# Utworzenie sieci Docker
+docker network create library-network
+
+# Uruchomienie RabbitMQ
+docker run -d \
+  --name rabbitmq \
+  --hostname rabbit \
+  --network library-network \
+  -p 15672:15672 -p 5672:5672 \
+  -e RABBITMQ_DEFAULT_USER=guest \
+  -e RABBITMQ_DEFAULT_PASS=guest \
+  --health-cmd="rabbitmqctl status" \
+  --health-interval=10s \
+  --health-timeout=5s \
+  --health-retries=5 \
+  --restart unless-stopped \
+  rabbitmq:3-management
+
+# Weryfikacja statusu
+docker ps --filter name=rabbitmq --format "table {{.Names}}\t{{.Status}}"
+
+# Build i uruchomienie Web API
+docker build -t library-webapi -f Library.WebApi/Dockerfile .
+docker run -d \
+  --name library-webapi \
+  --network library-network \
+  -p 91:91 \
+  -e ASPNETCORE_ENVIRONMENT=Development \
+  -e RabbitMQ__Username=guest \
+  -e RabbitMQ__Password=guest \
+  -e "RabbitMQ__ServerAddress=rabbitmq://rabbitmq" \
+  --restart unless-stopped \
+  library-webapi
+
+# Build i uruchomienie NotificationService
+docker build -t library-notificationservice -f Library.NotificationService2/Dockerfile .
+docker run -d \
+  --name library-notificationservice \
+  --network library-network \
+  -e ASPNETCORE_ENVIRONMENT=Development \
+  -e RabbitMQ__Username=guest \
+  -e RabbitMQ__Password=guest \
+  -e "RabbitMQ__ServerAddress=rabbitmq://rabbitmq" \
+  --restart unless-stopped \
+  library-notificationservice
+
+# Build i uruchomienie frontendu aplikacji webowej
+docker build -t library-web -f Library.Web/Dockerfile .
+docker run -d \
+  --name library-web \
+  --network library-network \
+  -p 90:80 \
+  -e ASPNETCORE_ENVIRONMENT=Development \
+  -e LibraryWebApiServiceHost=http://library-webapi:91 \
+  --restart unless-stopped \
+  library-web
+
+
+
+
+
+
+Inne rzeczy:
+	# Usunięcie kontenera:
+	docker rm -f library-notificationservice
+
+	# Sprawdzenie aktualnie działających usług:
+	docker ps
+
+	# Logi web API, testowanie endpointów
+	docker logs library-webapi
