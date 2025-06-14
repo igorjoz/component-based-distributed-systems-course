@@ -1,0 +1,60 @@
+services:
+    rabbitmq:
+        image: rabbitmq:3-management
+        hostname: rabbit
+        ports:
+            - "15672:15672" # Management UI
+            - "5672:5672" # AMQP port
+        environment:
+            RABBITMQ_DEFAULT_USER: guest
+            RABBITMQ_DEFAULT_PASS: guest
+        healthcheck:
+            test: ["CMD", "rabbitmqctl", "status"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+    library-webapi:
+        build:
+            context: .
+            dockerfile: Library.WebApi/Dockerfile
+        ports:
+            - "91:91"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - RabbitMQ__Username=guest
+            - RabbitMQ__Password=guest
+            - RabbitMQ__ServerAddress=rabbitmq://rabbitmq
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+        restart: unless-stopped
+    library-notificationservice:
+        build:
+            context: .
+            dockerfile: Library.NotificationService2/Dockerfile
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - RabbitMQ__Username=guest
+            - RabbitMQ__Password=guest
+            - RabbitMQ__ServerAddress=rabbitmq://rabbitmq
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+        restart: unless-stopped
+
+    library-web:
+        build:
+            context: .
+            dockerfile: Library.Web/Dockerfile
+        ports:
+            - "90:80"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - LibraryWebApiServiceHost=http://library-webapi:91
+        depends_on:
+            - library-webapi
+        restart: unless-stopped
+
+networks:
+    default:
+        name: library-network-1
